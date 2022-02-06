@@ -1,0 +1,311 @@
+<div id="hist-market" class="scroll scrollbar auto-h">
+
+    <table *ngIf="action=='myTrades' && _zeroEx.display == 'eth'" class="history-table">
+        <thead>
+            <tr>
+                <th>Transaction</th>
+                <th>Type</th>
+                <th>{{_LSCXmarket.token.name}}</th>
+                <th>ETH</th>
+                <th>{{_LSCXmarket.token.name}}/ETH</th>
+            </tr>
+        </thead>
+        <tr *ngIf="history.length == 0">
+            <td colspan="5" class="collapse">There are no trades here</td>
+        </tr>
+        <tbody *ngFor="let trade of history, index as i">
+            <tr>
+                <td class="pointer" (click)="openExternal(trade.txHash)">{{trade.txHash}}</td>
+                <td *ngIf="trade.side == 'buy'">
+                    <p class="green">Buy Order</p>
+                </td>
+                <td *ngIf="trade.side == 'sell'">
+                    <p class="red">Sell Order</p>
+                </td>
+                <td>{{trade.amount | number:"1.0-8":"en"}}</td>
+                <td>{{trade.amountBase | number:"1.0-8":"en"}}</td>
+                <td>{{trade.price | number:"1.0-8":"en"}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table *ngIf="action=='myTrades' && _zeroEx.display == 'weth'" class="history-table">
+        <thead>
+            <tr>
+                <th>Amount filled</th>
+                <th>Type</th>
+                <!--<th>Date</th>-->
+                <th>{{_zeroEx.token.assetDataA.name}}</th>
+                <th>{{_zeroEx.token.assetDataB.name}}</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tr *ngIf="_zeroEx.allOrders.length == 0">
+            <td colspan="5" class="collapse">There are no trades here</td>
+        </tr>
+        <tbody *ngFor="let trade of _zeroEx.allOrders, index as i">
+            <tr>
+                <td *ngIf="trade.action == 'buy' && trade.filled != 0">
+                    <p class="red">-{{trade.orderTakerAssetFilledAmount}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p class="green">{{trade.orderMakerAssetFilledAmount}} {{_zeroEx.token.assetDataA.name}}</p>
+
+                </td>
+                <td *ngIf="trade.action == 'sell' && trade.filled != 0">
+                    <p class="green"> {{trade.orderMakerAssetFilledAmount}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p class="red">-{{trade.orderTakerAssetFilledAmount}} {{_zeroEx.token.assetDataA.name}}</p>
+
+                </td>
+                <td *ngIf="trade.action == 'buy' && trade.filled == 0">
+                    <p class="red">-{{trade.orderMakerAssetFilledAmount}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p class="green"> {{trade.orderTakerAssetFilledAmount}} {{_zeroEx.token.assetDataA.name}}</p>
+
+                </td>
+                <td *ngIf="trade.action == 'sell' && trade.filled == 0">
+                    <p class="green"> {{trade.orderTakerAssetFilledAmount}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p class="red">-{{trade.orderMakerAssetFilledAmount}} {{_zeroEx.token.assetDataA.name}}</p>
+
+                </td>
+                <td *ngIf="trade.action == 'buy'">
+                    <p class="green">Buy Order</p>
+                </td>
+                <td *ngIf="trade.action == 'sell'">
+                    <p class="red">Sell Order</p>
+                </td>
+                <td *ngIf="trade.action == 'buy' && trade.filled == 0">{{trade.takerAmount | number:"1.8-8":"en"}}</td>
+                <td *ngIf="trade.action == 'sell' && trade.filled == 0">{{trade.makerAmount | number:"1.8-8":"en"}}</td>
+                <td *ngIf="trade.action == 'buy' && trade.filled != 0">{{trade.makerAmount | number:"1.8-8":"en"}}</td>
+                <td *ngIf="trade.action == 'sell' && trade.filled != 0">{{trade.takerAmount | number:"1.8-8":"en"}}</td>
+
+                <td *ngIf="trade.action == 'buy' && trade.filled == 0">{{trade.makerAmount | number:"1.8-8":"en"}}</td>
+                <td *ngIf="trade.action == 'sell' && trade.filled == 0">{{trade.takerAmount | number:"1.8-8":"en"}}</td>
+                <td *ngIf="trade.action == 'buy' && trade.filled != 0">{{trade.takerAmount | number:"1.8-8":"en"}}</td>
+                <td *ngIf="trade.action == 'sell' && trade.filled != 0">{{trade.makerAmount | number:"1.8-8":"en"}}</td>
+                <td *ngIf="trade.filled == 0">
+                    <p>{{trade.priceTokenB | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p>{{trade.priceTokenA | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataA.name}}</p>
+
+                </td>
+                <td *ngIf="trade.filled != 0">
+                    <p>{{trade.priceTokenA | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p>{{trade.priceTokenB | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataA.name}}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table *ngIf="action=='myOrders' && _zeroEx.display == 'eth'" class="history-table inline">
+        <thead>
+            <tr>
+                <td class="red bold">SELL ORDERS</td>
+            </tr>
+            <tr>
+                <th>{{_LSCXmarket.token.name}}/ETH</th>
+                <th>Available volume</th>
+                <th class="history-expireSize">Expires in</th>
+            </tr>
+        </thead>
+        <tr *ngIf="_LSCXmarket.showSells == 0">
+            <td colspan="3" class="collapse">There are no orders here</td>
+        </tr>
+        <tbody *ngIf="_LSCXmarket.showSells != 0">
+
+            <tr class="pointer" *ngFor="let order of _LSCXmarket.showSells, index as i">
+                <td (click)="openOrderDialog('sell', order)">
+                    <p *ngIf="blockNumber <= order.expires" class="red">{{order.price | number:"1.4-8":"en"}}</p>
+                </td>
+                <td (click)="openOrderDialog('sell', order)">
+                    <p *ngIf="blockNumber <= order.expires">
+                        {{order.amount*order.price -order.available | number:"1.8-8":"en"}} ETH / {{order.amountBase | number:"1.8-8":"en"}} ETH
+                    </p>
+                </td>
+                <td *ngIf="blockNumber != null" (click)="openOrderDialog('sell', order)">
+                    <p *ngIf="blockNumber <= order.expires" class="history-expireSize">{{order.expires-blockNumber}}</p>
+                </td>
+                <td *ngIf="blockNumber == null" class="red">Not available</td>
+
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="extra inline" *ngIf="action=='myOrders' && _zeroEx.display == 'eth'">
+    </div>
+    <table *ngIf="action=='myOrders' && _zeroEx.display == 'eth'" class="history-table inline">
+        <thead>
+            <tr>
+                <td class="green bold">BUY ORDERS</td>
+            </tr>
+            <tr>
+                <th>{{_LSCXmarket.token.name}}/ETH</th>
+                <th>Available volume</th>
+                <th class="history-expireSize">Expires in</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="_LSCXmarket.showBuys == 0">
+            <tr>
+                <td colspan="3" class="collapse">There are no orders here</td>
+            </tr>
+        </tbody>
+
+        <tbody *ngIf="_LSCXmarket.showBuys != 0">
+            <tr class="pointer" *ngFor="let order of _LSCXmarket.showBuys, index as i">
+                <td (click)="openOrderDialog('buy', order)">
+                    <p *ngIf="blockNumber <= order.expires" class="green">{{order.price | number:"1.4-8":"en"}}</p>
+                </td>
+                <td (click)="openOrderDialog('buy', order)">
+                    <p *ngIf="blockNumber <= order.expires">
+                        {{order.amount - order.available | number:"1.8-8":"en"}} {{_LSCXmarket.token.name}} / {{order.amount | number:"1.8-8":"en"}} {{_LSCXmarket.token.name}}
+                    </p>
+                </td>
+                <td *ngIf="blockNumber != null" (click)="openOrderDialog('buy', order)">
+                    <p *ngIf="blockNumber <= order.expires" class="history-expireSize">
+                        {{order.expires - blockNumber}}
+                    </p>
+                </td>
+                <td *ngIf="blockNumber == null" class="red">Not available</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table *ngIf="action=='myOrders' && _zeroEx.display == 'weth'" class="history-table inline">
+        <thead>
+            <tr>
+                <td class="red bold">SELL ORDERS</td>
+            </tr>
+            <tr>
+                <th>{{_zeroEx.token.name}}</th>
+                <th>Available volume</th>
+                <th class="history-expireSize-weth">Expires</th>
+            </tr>
+        </thead>
+        <tr *ngIf="_zeroEx.showSells == 0">
+            <td colspan="3" class="collapse">There are no orders here</td>
+        </tr>
+        <tbody *ngIf="_zeroEx.showSells != 0">
+            <tr class="pointer" *ngFor="let order of _zeroEx.showSells, index as i">
+                <td (click)="openOrderDialog('sell', order)">
+                    <p class="red">{{order.priceTokenB | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p class="red">{{order.priceTokenA | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataA.name}}</p>
+                </td>
+                <td (click)="openOrderDialog('sell', order)">
+                    <p>
+                        {{order.filledAmount | number:"1.8-8":"en"}} {{order.takerData.symbol}} / {{order.takerAmount | number:"1.8-8":"en"}} {{order.takerData.symbol}}
+                    </p>
+                    <p>
+                        {{order.filledAmountOtherToken | number:"1.8-8":"en"}} {{order.makerData.symbol}} / {{order.makerAmount | number:"1.8-8":"en"}} {{order.makerData.symbol}}
+                    </p>
+
+                </td>
+                <td *ngIf="blockNumber != null" (click)="openOrderDialog('sell', order)">
+                    <p class="history-expireSize-weth">{{order.date.countdown}}</p>
+                </td>
+                <td *ngIf="blockNumber == null" class="red">Not available</td>
+
+            </tr>
+
+        </tbody>
+    </table>
+    <div class="extra inline" *ngIf="action=='myOrders' && _zeroEx.display == 'weth'">
+    </div>
+    <table *ngIf="action=='myOrders' && _zeroEx.display == 'weth'" class="history-table inline">
+        <thead>
+            <tr>
+                <td class="green bold">BUY ORDERS</td>
+            </tr>
+            <tr>
+                <th>{{_zeroEx.token.name}}</th>
+                <th>Available volume</th>
+                <th class="history-expireSize-weth">Expires</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="_zeroEx.showBuys == 0">
+            <tr>
+                <td colspan="3" class="collapse">There are no orders here</td>
+            </tr>
+        </tbody>
+
+        <tbody *ngIf="_zeroEx.showBuys != 0">
+            <tr class="pointer" *ngFor="let order of _zeroEx.showBuys, index as i">
+                <td (click)="openOrderDialog('buy', order)">
+                    <p class="green">{{order.priceTokenB | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataB.name}}</p>
+                    <p class="green">{{order.priceTokenA | number:"1.4-8":"en"}} {{_zeroEx.token.assetDataA.name}}</p>
+
+                </td>
+                <td (click)="openOrderDialog('buy', order)">
+                    <p>
+                        {{order.filledAmountOtherToken | number:"1.8-8":"en"}} {{order.makerData.symbol}} / {{order.makerAmount | number:"1.8-8":"en"}} {{order.makerData.symbol}}
+                    </p>
+                    <p>
+                        {{order.filledAmount | number:"1.8-8":"en"}} {{order.takerData.symbol}} / {{order.takerAmount | number:"1.8-8":"en"}} {{order.takerData.symbol}}
+                    </p>
+                </td>
+                <td *ngIf="blockNumber != null" (click)="openOrderDialog('buy', order)">
+                    <p class="history-expireSize-weth">
+                        {{order.date.countdown}}
+                    </p>
+                </td>
+                <td *ngIf="blockNumber == null" class="red">Not available</td>
+            </tr>
+        </tbody>
+    </table>
+    <table *ngIf="action=='myFunds' && _zeroEx.display == 'eth'" class="history-table">
+        <thead>
+            <tr>
+                <th>Transaction</th>
+                <th>Type</th>
+                <th>{{_LSCXmarket.token.name}}</th>
+                <th>ETH</th>
+            </tr>
+        </thead>
+        <tr *ngIf="history.length == 0">
+            <td colspan="4" class="collapse">There are no funds</td>
+        </tr>
+        <tbody *ngFor="let fund of history, index as i">
+            <tr>
+                <td class="pointer" (click)="openExternal(fund.txHash)">{{fund.txHash}}</td>
+                <td>
+                    <p>{{fund.kind| titlecase}}</p>
+                </td>
+                <td>
+                    <p *ngIf="fund.tokenAddr != '0x0000000000000000000000000000000000000000'">{{fund.amount}}</p>
+                </td>
+                <td>
+                    <p *ngIf="fund.tokenAddr == '0x0000000000000000000000000000000000000000'">{{fund.amount}}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table *ngIf="action=='myFunds' && _zeroEx.display == 'weth'" class="history-table">
+        <thead>
+            <tr>
+                <th>Transaction</th>
+                <th>Type</th>
+                <th>WETH</th>
+                <th>ETH</th>
+            </tr>
+        </thead>
+        <tr *ngIf="_zeroEx.funds.length == 0">
+            <td colspan="4" class="collapse">There are no funds</td>
+        </tr>
+        <tbody *ngFor="let fund of _zeroEx.funds, index as i">
+            <tr>
+                <td class="pointer" (click)="openExternal(fund.hash)">{{fund.hash}}</td>
+                <td>
+                    <p *ngIf="fund.from == _zeroEx.contractAddresses.etherToken">Withdraw</p>
+                    <p *ngIf="fund.to == _zeroEx.contractAddresses.etherToken">Deposit</p>
+                </td>
+                <td>
+                    <p *ngIf="fund.to == _zeroEx.contractAddresses.etherToken">{{(fund.value | converter:'fromWei':'ether') | number:'1.2-5':'en'}}</p>
+                </td>
+                <td>
+                    <p *ngIf="fund.from == _zeroEx.contractAddresses.etherToken">{{(fund.value | converter:'fromWei':'ether') | number:'1.2-5':'en'}}</p>
+
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<app-paginator *ngIf="page>1" (goPage)="goToPage($event)" [currentPage]="page" [perPage]="limit" [count]="totalPages"></app-paginator>
+<div class="market-message">
+    <p *ngIf="_zeroEx.display == 'eth'">Make sure <a class="pointer" (click)="openExternalToken()">{{_LSCXmarket.token?.name}}</a> is the token you actually want to trade. Multiple tokens can share the same name.</p>
+    <p *ngIf="_zeroEx.display == 'weth'">Make sure <a class="pointer" (click)="openExternalToken()">{{_zeroEx.token?.name}}</a> is the pair you actually want to trade. Multiple pairs can share the same name.</p>
+</div>
