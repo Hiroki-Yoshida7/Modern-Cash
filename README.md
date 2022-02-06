@@ -214,7 +214,7 @@ Pubish in your app the transaction hash of the payment to this address
 
 ETH, BNB, MATIC
 
-[0x066661272CB3AEaddC77273b3625be07d93aaE32](https://etherscan.io/address/0xfFA2D61cbA573bC8047A7Af94AFeC5052934e564)
+[0x066661272CB3AEaddC77273b3625be07d93aaE32](https://etherscan.io/address/0x066661272CB3AEaddC77273b3625be07d93aaE32)
 
 # Agricultural producers
 
